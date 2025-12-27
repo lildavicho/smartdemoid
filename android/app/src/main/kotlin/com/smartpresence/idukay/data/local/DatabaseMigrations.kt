@@ -4,8 +4,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 val MIGRATION_1_2 = object : Migration(1, 2) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL(
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
             """
             CREATE TABLE IF NOT EXISTS pending_attendance (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -22,10 +22,10 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 }
 
 val MIGRATION_2_3 = object : Migration(2, 3) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL("DROP TABLE IF EXISTS pending_attendance_backup")
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("DROP TABLE IF EXISTS pending_attendance_backup")
         
-        database.execSQL(
+        db.execSQL(
             """
             CREATE TABLE pending_attendance_backup (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -39,7 +39,7 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
             """.trimIndent()
         )
         
-        database.execSQL(
+        db.execSQL(
             """
             INSERT INTO pending_attendance_backup (id, sessionId, studentId, timestamp, status, retryCount, confidence)
             SELECT id, sessionId, studentId, timestamp, status, retryCount, confidence
@@ -47,9 +47,9 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
             """.trimIndent()
         )
         
-        database.execSQL("DROP TABLE pending_attendance")
+        db.execSQL("DROP TABLE pending_attendance")
         
-        database.execSQL(
+        db.execSQL(
             """
             CREATE TABLE pending_attendance (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -66,9 +66,9 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
             """.trimIndent()
         )
         
-        database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_pending_attendance_localId ON pending_attendance(localId)")
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_pending_attendance_localId ON pending_attendance(localId)")
         
-        database.execSQL(
+        db.execSQL(
             """
             INSERT INTO pending_attendance (id, localId, sessionId, studentId, confidence, detectedAt, confirmedAt, timestamp, status, retryCount)
             SELECT 
@@ -86,9 +86,9 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
             """.trimIndent()
         )
         
-        database.execSQL("DROP TABLE pending_attendance_backup")
+        db.execSQL("DROP TABLE pending_attendance_backup")
         
-        database.execSQL(
+        db.execSQL(
             """
             CREATE TABLE IF NOT EXISTS pending_session_updates (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -103,14 +103,14 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
             """.trimIndent()
         )
         
-        database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_pending_session_updates_localId ON pending_session_updates(localId)")
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_pending_session_updates_localId ON pending_session_updates(localId)")
     }
 }
 
 val MIGRATION_3_4 = object : Migration(3, 4) {
-    override fun migrate(database: SupportSQLiteDatabase) {
+    override fun migrate(db: SupportSQLiteDatabase) {
         // Add courseId column to pending_session_updates table
-        database.execSQL(
+        db.execSQL(
             """
             ALTER TABLE pending_session_updates 
             ADD COLUMN courseId TEXT

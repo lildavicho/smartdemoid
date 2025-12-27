@@ -5,8 +5,6 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     OneToMany,
-    ManyToOne,
-    JoinColumn,
 } from 'typeorm';
 import { FaceTemplate } from '../../face-templates/entities/face-template.entity';
 import { AttendanceRecord } from '../../attendance/entities/attendance-record.entity';

@@ -1,15 +1,11 @@
 package com.smartpresence.idukay.data.remote.dto
 
-import com.squareup.moshi.JsonClass
-
-@JsonClass(generateAdapter = true)
 data class CourseRosterResponse(
     val course: CourseDto,
     val students: List<StudentDto>,
     val totalStudents: Int
 )
 
-@JsonClass(generateAdapter = true)
 data class CourseDto(
     val id: String,
     val name: String,
@@ -17,7 +13,6 @@ data class CourseDto(
     val academicPeriod: String
 )
 
-@JsonClass(generateAdapter = true)
 data class StudentDto(
     val id: String,
     val documentId: String,
@@ -26,7 +21,6 @@ data class StudentDto(
     val email: String?
 )
 
-@JsonClass(generateAdapter = true)
 data class FaceTemplateDto(
     val id: String,
     val studentId: String,

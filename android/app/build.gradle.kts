@@ -20,19 +20,21 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        
-        // Network configuration - change API_HOST to your LAN IP
-        buildConfigField("String", "API_HOST", "\"192.168.1.24\"")
-        buildConfigField("boolean", "USE_ADB_REVERSE", "false")
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"https://smartid-backend.onrender.com/api/v1/\"")
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "API_BASE_URL", "\"https://smartid-backend.onrender.com/api/v1/\"")
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
         }
     }
 
@@ -105,7 +107,6 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("com.squareup.moshi:moshi:1.15.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
-    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")

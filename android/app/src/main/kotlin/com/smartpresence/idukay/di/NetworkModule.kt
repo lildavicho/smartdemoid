@@ -1,6 +1,7 @@
 package com.smartpresence.idukay.di
 
 import android.content.Context
+import com.smartpresence.idukay.BuildConfig
 import com.smartpresence.idukay.data.remote.AuthInterceptor
 import com.smartpresence.idukay.data.remote.api.SmartPresenceApi
 import com.squareup.moshi.Moshi
@@ -39,15 +40,17 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BASIC else HttpLoggingInterceptor.Level.NONE
         }
         
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
+            .retryOnConnectionFailure(true)
             .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .callTimeout(70, TimeUnit.SECONDS)
             .build()
     }
     

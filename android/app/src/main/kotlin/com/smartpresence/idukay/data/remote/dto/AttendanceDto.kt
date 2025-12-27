@@ -1,9 +1,5 @@
 package com.smartpresence.idukay.data.remote.dto
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-
-@JsonClass(generateAdapter = true)
 data class CreateSessionRequest(
     val courseId: String,
     val teacherId: String? = null,
@@ -14,7 +10,6 @@ data class CreateSessionRequest(
  * Response for createAttendanceSession - the backend returns the session object directly at root level.
  * Fields match the JSON response from the backend.
  */
-@JsonClass(generateAdapter = true)
 data class CreateSessionResponse(
     val id: String,
     val courseId: String,
@@ -28,7 +23,6 @@ data class CreateSessionResponse(
     val updatedAt: String? = null
 )
 
-@JsonClass(generateAdapter = true)
 data class AttendanceSessionDto(
     val id: String,
     val courseId: String,
@@ -39,13 +33,11 @@ data class AttendanceSessionDto(
     val status: String
 )
 
-@JsonClass(generateAdapter = true)
 data class UpdateSessionRequest(
     val status: String,
     val records: List<AttendanceRecordDto>
 )
 
-@JsonClass(generateAdapter = true)
 data class AttendanceRecordDto(
     val studentId: String,
     val status: String,

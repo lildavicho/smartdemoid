@@ -1,10 +1,9 @@
-import { Injectable, ConflictException, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DeviceBinding } from './entities/device-binding.entity';
 import { BindDeviceDto } from './dto/bind-device.dto';
 import { RebindDeviceDto } from './dto/rebind-device.dto';
-import * as crypto from 'crypto';
 
 @Injectable()
 export class DevicesService {
@@ -128,7 +127,7 @@ export class DevicesService {
     private verifyAdminPinProof(proof: string): boolean {
         // For now, accept any non-empty proof
         // In production, verify JWT signed by Android with admin PIN hash
-        return proof && proof.length > 0;
+        return proof.trim().length > 0;
     }
 
     /**

@@ -1,20 +1,22 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { AppModule } from './app.module';
 
 async function seed() {
-    const app = await NestFactory.createApplicationContext(AppModule);
+    const app = await NestFactory.createApplicationContext(AppModule.register());
     const dataSource = app.get(DataSource);
 
-    console.log('🌱 Starting seed process...');
+    if (!dataSource.isInitialized) {
+        await dataSource.initialize();
+    }
+
+    console.log('Starting seed process...');
 
     try {
-        // Generate a school ID
         const schoolId = uuidv4();
 
-        // 1. Create Device
         console.log('Creating device...');
         const deviceResult = await dataSource.query(
             `INSERT INTO devices (id, serial_number, model, school_id, location, app_version, status, created_at, updated_at)
@@ -30,10 +32,9 @@ async function seed() {
                 'active',
             ],
         );
-        const deviceId = deviceResult[0].id;
-        console.log(`✅ Device created: DEMO-001 (${deviceId})`);
+        const deviceId = deviceResult[0].id as string;
+        console.log(`Device created: DEMO-001 (${deviceId})`);
 
-        // 2. Create Teacher
         console.log('Creating teacher...');
         const hashedPin = await bcrypt.hash('1234', 10);
         const teacherResult = await dataSource.query(
@@ -44,35 +45,31 @@ async function seed() {
                 uuidv4(),
                 schoolId,
                 'T-001',
-                'María',
-                'González',
+                'Maria',
+                'Gonzalez',
                 'maria.gonzalez@school.edu',
                 hashedPin,
                 'active',
             ],
         );
-        const teacherId = teacherResult[0].id;
-        console.log(`✅ Teacher created: María González (PIN: 1234)`);
+        const teacherId = teacherResult[0].id as string;
+        console.log(`Teacher created: Maria Gonzalez (PIN: 1234) (${teacherId})`);
 
-        // 3. Create Course
-        console.log('Creating course...');
-        const courseId = uuidv4();
-
-        // First, create 30 students
         console.log('Creating 30 students...');
         const studentIds: string[] = [];
+
         const firstNames = [
-            'Juan', 'María', 'Carlos', 'Ana', 'Luis', 'Carmen', 'Pedro', 'Laura',
-            'Miguel', 'Isabel', 'José', 'Sofía', 'Antonio', 'Elena', 'Francisco',
-            'Lucía', 'Manuel', 'Paula', 'David', 'Marta', 'Javier', 'Cristina',
+            'Juan', 'Maria', 'Carlos', 'Ana', 'Luis', 'Carmen', 'Pedro', 'Laura',
+            'Miguel', 'Isabel', 'Jose', 'Sofia', 'Antonio', 'Elena', 'Francisco',
+            'Lucia', 'Manuel', 'Paula', 'David', 'Marta', 'Javier', 'Cristina',
             'Alejandro', 'Beatriz', 'Roberto', 'Natalia', 'Fernando', 'Andrea',
             'Diego', 'Valentina',
         ];
         const lastNames = [
-            'García', 'Rodríguez', 'Martínez', 'López', 'González', 'Pérez',
-            'Sánchez', 'Ramírez', 'Torres', 'Flores', 'Rivera', 'Gómez',
-            'Díaz', 'Cruz', 'Morales', 'Reyes', 'Gutiérrez', 'Ortiz',
-            'Jiménez', 'Hernández', 'Ruiz', 'Mendoza', 'Álvarez', 'Castillo',
+            'Garcia', 'Rodriguez', 'Martinez', 'Lopez', 'Gonzalez', 'Perez',
+            'Sanchez', 'Ramirez', 'Torres', 'Flores', 'Rivera', 'Gomez',
+            'Diaz', 'Cruz', 'Morales', 'Reyes', 'Gutierrez', 'Ortiz',
+            'Jimenez', 'Hernandez', 'Ruiz', 'Mendoza', 'Alvarez', 'Castillo',
             'Romero', 'Silva', 'Castro', 'Vargas', 'Ramos', 'Medina',
         ];
 
@@ -94,10 +91,9 @@ async function seed() {
                 ],
             );
 
-            // Create fake face template for each student
             const embedding = new Float32Array(512);
             for (let j = 0; j < 512; j++) {
-                embedding[j] = Math.random() * 2 - 1; // Random values between -1 and 1
+                embedding[j] = Math.random() * 2 - 1;
             }
             const embeddingBuffer = Buffer.from(embedding.buffer);
 
@@ -109,43 +105,45 @@ async function seed() {
                     studentId,
                     embeddingBuffer,
                     'w600k_r50',
-                    0.85 + Math.random() * 0.15, // Quality score between 0.85 and 1.0
+                    0.85 + Math.random() * 0.15,
                     'enrollment',
                 ],
             );
         }
-        console.log(`✅ Created 30 students with face templates`);
 
-        // Now create the course with student IDs
+        console.log('Created 30 students with face templates');
+
+        console.log('Creating course...');
+        const courseId = uuidv4();
         await dataSource.query(
             `INSERT INTO courses (id, school_id, name, code, academic_period, student_ids, created_at, updated_at)
        VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
             [
                 courseId,
                 schoolId,
-                'Matemáticas 10A',
+                'Matematicas 10A',
                 'MAT-10A',
                 '2024-1',
                 JSON.stringify(studentIds),
             ],
         );
-        console.log(`✅ Course created: Matemáticas 10A`);
+        console.log(`Course created: Matematicas 10A (${courseId})`);
 
-        console.log('\n🎉 Seed completed successfully!');
-        console.log('\n📋 Summary:');
+        console.log('\nSeed completed successfully!');
+        console.log('\nSummary:');
         console.log(`   School ID: ${schoolId}`);
-        console.log(`   Device: DEMO-001`);
-        console.log(`   Teacher: María González (PIN: 1234)`);
-        console.log(`   Course: Matemáticas 10A (${studentIds.length} students)`);
-        console.log('\n🔐 Login credentials:');
+        console.log(`   Device: DEMO-001 (${deviceId})`);
+        console.log(`   Teacher: Maria Gonzalez (${teacherId})`);
+        console.log(`   Course: Matematicas 10A (${studentIds.length} students)`);
+        console.log('\nLogin credentials:');
         console.log('   Serial Number: DEMO-001');
         console.log('   PIN: 1234');
     } catch (error) {
-        console.error('❌ Seed failed:', error);
+        console.error('Seed failed:', error);
         throw error;
     } finally {
         await app.close();
     }
 }
 
-seed();
+void seed();

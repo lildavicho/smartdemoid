@@ -2,10 +2,7 @@ package com.smartpresence.idukay.ai.alignment
 
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.graphics.RectF
 import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.math.sqrt
 
 object FaceAligner {
@@ -33,15 +30,10 @@ object FaceAligner {
     ): Bitmap {
         require(landmarks.size == 10) { "Expected 5 landmarks (10 coordinates)" }
         
-        // Extract eye positions
-        val leftEye = floatArrayOf(landmarks[0], landmarks[1])
-        val rightEye = floatArrayOf(landmarks[2], landmarks[3])
-        
         // Calculate transformation matrix using similarity transform
         val matrix = calculateSimilarityTransform(
             srcPoints = landmarks,
             dstPoints = TEMPLATE_LANDMARKS,
-            outputSize = outputSize
         )
         
         // Apply transformation
@@ -59,7 +51,6 @@ object FaceAligner {
     private fun calculateSimilarityTransform(
         srcPoints: FloatArray,
         dstPoints: FloatArray,
-        outputSize: Int
     ): Matrix {
         // Use first 3 points (eyes and nose) for transformation
         val src = FloatArray(6)

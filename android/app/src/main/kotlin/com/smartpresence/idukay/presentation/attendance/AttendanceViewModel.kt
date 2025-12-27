@@ -455,7 +455,7 @@ class AttendanceViewModel @Inject constructor(
                             continue
                         }
                         lastFrameProcessedAtMs = nowMs
-                        processFrameInternal(frame.bitmap, frame.timestampMs)
+                        processFrameInternal(frame.bitmap)
                     }
                 } catch (e: Exception) {
                     Timber.e(e, "Frame processing loop failed")
@@ -473,7 +473,7 @@ class AttendanceViewModel @Inject constructor(
         frameQueue = null
     }
 
-    private suspend fun processFrameInternal(bitmap: android.graphics.Bitmap, timestampMs: Long) {
+    private suspend fun processFrameInternal(bitmap: android.graphics.Bitmap) {
         val startTime = System.currentTimeMillis()
         val frame = recognitionPipeline.processFrame(bitmap)
         val processingTime = System.currentTimeMillis() - startTime

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AttendanceEvent } from './entities/attendance-event.entity';
-import { BatchEventsDto, AttendanceEventItemDto } from './dto/batch-events.dto';
+import { BatchEventsDto } from './dto/batch-events.dto';
 
 @Injectable()
 export class AttendanceEventsService {

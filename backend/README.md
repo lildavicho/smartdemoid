@@ -1,121 +1,78 @@
 # SmartPresence Backend
 
-Backend API for SmartPresence - Facial Recognition Attendance System
+API NestJS para SmartPresence (asistencia con reconocimiento facial).
 
-## Tech Stack
+## Requisitos
 
-- **Framework**: NestJS 10.x
-- **Language**: TypeScript 5.x
-- **Database**: PostgreSQL 15 (Supabase)
-- **ORM**: TypeORM 0.3.x
-- **Authentication**: JWT (Passport)
-- **Queue**: Bull + Redis (Upstash)
-- **Package Manager**: PNPM
+- Node.js 18+
+- PostgreSQL (Supabase/Render u otro)
 
-## Prerequisites
+## Variables de entorno
 
-- Node.js 18+ 
-- PNPM 8+
-- PostgreSQL (Supabase account)
-- Redis (Upstash account)
+El backend lee variables desde `backend/.env` o `../.env` (solo para desarrollo local). En Render se configuran desde el panel.
 
-## Installation
+Minimas para operacion completa:
 
-```bash
-# Install dependencies
-pnpm install
-```
+- `DATABASE_URL` (PostgreSQL)
+- `JWT_SECRET`
+- `JWT_EXPIRES_IN` (ej: `7d`)
 
-## Configuration
+Opcionales:
 
-The `.env` file is located in the parent directory (`../env`). It should contain:
+- `API_PREFIX` (default `api/v1`)
+- `CORS_ORIGINS` (coma-separado, solo si hay panel web)
+- `CORS_CREDENTIALS` (`true|false`, default `false`)
+- `RATE_LIMIT_WINDOW_MS` (default `60000`)
+- `RATE_LIMIT_MAX` (default `300`)
+- `TYPEORM_SYNCHRONIZE` (default `false` en prod)
+- `TYPEORM_LOGGING` (default `false` en prod)
 
-```env
-# Database (Supabase)
-DB_HOST=your-supabase-host
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=your-password
-DB_DATABASE=postgres
-
-# JWT
-JWT_SECRET=your-secret-key
-JWT_EXPIRES_IN=1h
-
-# App
-NODE_ENV=development
-PORT=3000
-API_PREFIX=api/v1
-```
-
-## Running the Application
+## Local
 
 ```bash
-# Development mode
-pnpm start:dev
-
-# Production mode
-pnpm build
-pnpm start:prod
+cd backend
+npm ci
+npm run start:dev
 ```
 
-## Database Setup
+Health:
 
 ```bash
-# Run seed script to populate demo data
-pnpm seed
+curl http://localhost:3000/healthz
+curl http://localhost:3000/readyz
 ```
 
-This will create:
-- 1 Device (Serial: `DEMO-001`)
-- 1 Teacher (PIN: `1234`)
-- 1 Course (Matemáticas 10A)
-- 30 Students with face templates
+## Endpoints
 
-## API Endpoints
+Con `API_PREFIX=api/v1`:
 
-### Authentication
-- `POST /api/v1/auth/device/login` - Device + Teacher PIN login
+- `POST /api/v1/auth/device/login`
 
-### Courses
-- `GET /api/v1/courses/:id/roster` - Get course roster with students
-
-### Students
-- `GET /api/v1/students/:id/face-templates` - Get student face embeddings
-
-### Attendance
-- `POST /api/v1/attendance/sessions` - Create attendance session
-- `PUT /api/v1/attendance/sessions/:id` - Update session with records
-- `GET /api/v1/attendance/sessions/:id` - Get session details
-
-## Testing Login
+Ejemplo:
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/device/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "serialNumber": "DEMO-001",
-    "pin": "1234"
-  }'
+curl -X POST http://localhost:3000/api/v1/auth/device/login ^
+  -H "Content-Type: application/json" ^
+  -d "{\"serial_number\":\"DEMO-001\",\"pin_code\":\"1234\"}"
 ```
 
-## Project Structure
+## Render (produccion)
 
+Este repo incluye `render.yaml` en la raiz.
+
+En el panel de Render:
+
+- Root Directory: `backend`
+- Build Command: `npm ci && npm run build`
+- Start Command: `npm run start:prod`
+- Health Check Path: `/healthz`
+
+Probar:
+
+```bash
+curl https://smartid-backend.onrender.com/healthz
+curl https://smartid-backend.onrender.com/readyz
+curl -X POST https://smartid-backend.onrender.com/api/v1/auth/device/login ^
+  -H "Content-Type: application/json" ^
+  -d "{\"serial_number\":\"DEMO-001\",\"pin_code\":\"1234\"}"
 ```
-src/
-├── auth/                 # Authentication module
-├── attendance/           # Attendance sessions & records
-├── courses/              # Course management
-├── students/             # Student management
-├── face-templates/       # Face embeddings
-├── devices/              # Device entities
-├── teachers/             # Teacher entities
-├── config/               # Configuration files
-├── app.module.ts         # Root module
-├── main.ts               # Application entry point
-└── seed.ts               # Database seeding script
-```
-
-## License
-
-MIT

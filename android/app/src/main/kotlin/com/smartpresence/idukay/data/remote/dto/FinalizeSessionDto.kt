@@ -1,8 +1,5 @@
 package com.smartpresence.idukay.data.remote.dto
 
-import com.squareup.moshi.JsonClass
-
-@JsonClass(generateAdapter = true)
 data class FinalizeSessionRequest(
     val sessionId: String,
     val teacherId: String,
@@ -11,7 +8,6 @@ data class FinalizeSessionRequest(
     val idempotencyKey: String
 )
 
-@JsonClass(generateAdapter = true)
 data class FinalizeSessionResponse(
     val success: Boolean,
     val status: String, // "applied", "already_applied", "rejected"

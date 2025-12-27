@@ -63,7 +63,7 @@ class FaceRecognitionAnalyzer(
 
     private fun convertRgba8888(image: ImageProxy): android.graphics.Bitmap? {
         val plane = image.planes.firstOrNull() ?: return null
-        val buffer = plane.buffer ?: return null
+        val buffer = plane.buffer
 
         val width = image.width
         val height = image.height

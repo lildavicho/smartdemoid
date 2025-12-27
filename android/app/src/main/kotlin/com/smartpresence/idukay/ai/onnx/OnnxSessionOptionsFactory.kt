@@ -50,7 +50,9 @@ object OnnxSessionOptionsFactory {
     private fun configureGraphOptimizations(options: OrtSession.SessionOptions) {
         try {
             val optLevelClass = Class.forName("ai.onnxruntime.OrtSession\$SessionOptions\$OptLevel")
-            val allOpt = java.lang.Enum.valueOf(optLevelClass as Class<out Enum<*>>, "ALL_OPT")
+            val allOpt = optLevelClass.enumConstants
+                ?.firstOrNull { (it as? Enum<*>)?.name == "ALL_OPT" }
+                ?: return
             val method = options.javaClass.getMethod("setOptimizationLevel", optLevelClass)
             method.invoke(options, allOpt)
         } catch (_: Throwable) {

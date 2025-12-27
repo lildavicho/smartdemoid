@@ -73,7 +73,7 @@ fun DeviceNotAuthorizedScreen(
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )
                     
-                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                     
                     Row(
                         modifier = Modifier.fillMaxWidth(),
