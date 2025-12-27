@@ -8,3 +8,5 @@ backend/**/dist/
 backend/**/build/
 .DS_Store
 *.iml
+**/.gradle/
+**/build/
