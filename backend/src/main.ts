@@ -1,40 +1,41 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AppModule } from './app.module';
+import { NestFactory } from '@nestjs/core'
+import { ValidationPipe } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { AppModule } from './app.module'
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule)
 
-    const configService = app.get(ConfigService);
+  const configService = app.get(ConfigService)
 
-    // Enable CORS
-    app.enableCors({
-        origin: '*',
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-        credentials: true,
-    });
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  })
 
-    // Set global prefix
-    const apiPrefix = configService.get<string>('API_PREFIX') || 'api/v1';
-    app.setGlobalPrefix(apiPrefix);
+  const httpAdapter = app.getHttpAdapter()
+  const instance: any = httpAdapter.getInstance?.()
+  if (instance?.set) instance.set('trust proxy', 1)
 
-    // Enable global validation pipe
-    app.useGlobalPipes(
-        new ValidationPipe({
-            whitelist: true,
-            forbidNonWhitelisted: true,
-            transform: true,
-            transformOptions: {
-                enableImplicitConversion: true,
-            },
-        }),
-    );
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  )
 
-    const port = configService.get<number>('PORT') || 3000;
-    await app.listen(port);
+  const apiPrefix = configService.get<string>('API_PREFIX') || 'api/v1'
+  app.setGlobalPrefix(apiPrefix)
 
-    console.log(`🚀 SmartPresence Backend running on: http://localhost:${port}/${apiPrefix}`);
+  app.use('/healthz', (_req: any, res: any) => res.status(200).send('ok'))
+
+  const port = Number(process.env.PORT) || configService.get<number>('PORT') || 3000
+  await app.listen(port, '0.0.0.0')
+
+  console.log(`SmartPresence Backend running: http://0.0.0.0:${port}/${apiPrefix}`)
 }
 
-bootstrap();
+bootstrap()
