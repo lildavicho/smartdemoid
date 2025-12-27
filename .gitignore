@@ -1,0 +1,10 @@
+.env
+nul
+node_modules/
+backend/node_modules/
+android/.idea/
+android/**/build/
+backend/**/dist/
+backend/**/build/
+.DS_Store
+*.iml

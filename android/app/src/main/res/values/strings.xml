@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SmartPresence</string>
+    
+    <!-- Login Screen -->
+    <string name="login_title">SmartPresence</string>
+    <string name="login_subtitle">Sistema de Asistencia Facial</string>
+    <string name="serial_number_label">Número de Serie</string>
+    <string name="serial_number_hint">DEMO-001</string>
+    <string name="pin_label">PIN</string>
+    <string name="pin_hint">1234</string>
+    <string name="login_button">Iniciar Sesión</string>
+    
+    <!-- Course Selection Screen -->
+    <string name="select_course_title">Seleccionar Curso</string>
+    <string name="select_course_action">Seleccionar</string>
+    
+    <!-- Attendance Screen -->
+    <string name="attendance_title">Tomar Asistencia</string>
+    <string name="back_button">Volver</string>
+    <string name="start_attendance">Iniciar Asistencia</string>
+    <string name="stop_attendance">Detener Asistencia</string>
+    <string name="camera_preview">Vista Previa de Cámara</string>
+    <string name="camera_active">Cámara Activa</string>
+    <string name="implementation_pending">(Implementación pendiente)</string>
+    
+    <!-- Common -->
+    <string name="loading">Cargando…</string>
+    <string name="error_generic">Ha ocurrido un error</string>
+    <string name="error_network">Error de conexión</string>
+    <string name="error_auth">Error de autenticación</string>
+</resources>
